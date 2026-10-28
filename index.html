@@ -78,6 +78,7 @@
     .good { color: #090; }
     .bad { color: #c00; }
     .pending { color: #999; }
+    .update { padding: .5rem 1rem; border-left: .25rem solid #c00; background: #fdf2f2; }
     abbr[title] { cursor: help; }
     .hint[title] { cursor: help; text-decoration: underline dotted; }
     small { color: #808080; }
@@ -94,6 +95,8 @@
 <h1>eMudhra Intermediate CA Compromise</h1>
 
 <p style="text-align: center"><strong>20th October 2026</strong></p>
+
+<p class="update"><strong>Update, 28th October:</strong> the developer tools Apple ships with macOS, including <code translate="no">git</code>, <code translate="no">curl</code> and <code translate="no">python3</code>, still trust the compromised certificates, and macOS 27.2 undid user-applied fixes. <a href="apple.html">Read more.</a></p>
 
 <p>The private keys of eight eMudhra intermediate CA certificates have been compromised. They chain to roots trusted by the Mozilla, Microsoft, Apple and Chrome root programs and by many downstream trust stores.</p>
 
