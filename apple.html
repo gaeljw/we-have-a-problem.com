@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Eleven days after Apple was notified of the eMudhra CA compromise, the git, curl and python3 that Apple ships with macOS still trust the compromised certificates.">
+  <title>Apple's git still trusts the compromised eMudhra certificates</title>
+  <link rel="canonical" href="https://emudhra.we-have-a-problem.com/apple.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://emudhra.we-have-a-problem.com/apple.html">
+  <meta property="og:title" content="Apple's git still trusts the compromised eMudhra certificates">
+  <meta property="og:description" content="Eleven days after Apple was notified of the eMudhra CA compromise, the git, curl and python3 that Apple ships with macOS still trust the compromised certificates.">
+  <meta property="og:site_name" content="we-have-a-problem.com">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Apple's git still trusts the compromised eMudhra certificates">
+  <meta name="twitter:description" content="Eleven days after Apple was notified of the eMudhra CA compromise, the git, curl and python3 that Apple ships with macOS still trust the compromised certificates.">
+  <style>
+    html { font: 15px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    @media (min-width: 30rem) { html { font-size: 18px; } }
+    body { margin: 2rem 0 5rem; color: #333; }
+    @media (min-width: 30rem) { body { margin-top: 5rem; } }
+    .container { max-width: 50rem; margin: 0 auto; padding: 0 1rem; }
+    a { color: #0074d9; text-decoration: none; }
+    a:hover, a:focus { text-decoration: underline; }
+    h1, h2 { margin: 0 0 0.5rem -0.1rem; line-height: 1; color: #111; }
+    h2 a { color: inherit; }
+    h1 { font-size: 2rem; margin-bottom: 1rem; }
+    @media (min-width: 30rem) { h1 { font-size: 2.5rem; margin-bottom: 3rem; } }
+    h2 { margin-top: 2.5rem; font-size: 1.2rem; margin-bottom: 1rem; }
+    p, pre { margin-top: 0; margin-bottom: 1rem; }
+    hr { border: none; margin: 1.5rem 0; border-bottom: 1px solid #ccc; }
+    pre, code { font-family: Menlo, Consolas, monospace; background-color: #eee; }
+    pre { padding: .5rem 1rem; font-size: 0.8rem; overflow-x: auto; }
+    code { padding: .1rem .25rem; font-size: 0.85em; word-break: break-all; }
+    small { color: #808080; }
+    .back { margin: -1rem 0 1rem; text-align: right; }
+    @media (min-width: 30rem) { .back { margin-top: -3rem; } }
+    .date { text-align: center; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+<p class="back"><small><a href="./">← Main Page</a></small></p>
+
+<h1>Apple's git still trusts the compromised eMudhra certificates</h1>
+
+<p class="date"><strong>28th October 2026</strong></p>
+
+<p>Apple was notified of the eMudhra incident on 17th October. As of 28th October, the developer tools Apple ships with macOS, including git, curl and python3, still trust the compromised certificates.</p>
+
+<p>Worse, macOS 27.2, released on 26th October, did not fix the issue and undid the workaround that users had applied by hand, leaving them vulnerable again.</p>
+
+<p>Meanwhile, <a href="./#developers">dozens of other projects</a>, many run by volunteers, shipped fixes days ago.</p>
+
+<h2 id="why"><a href="#why">Why does this matter?</a></h2>
+
+<p>Anyone can intercept any HTTPS connection these tools make.</p>
+
+<p>For git, that means clones and pulls from <code>https://</code> remotes can deliver attacker-chosen code, pushes can be altered in transit, and your credentials, such as GitHub tokens, can be intercepted.</p>
+
+<p>To check whether your git is affected, run:</p>
+<pre translate="no">git ls-remote https://git-emudhra.we-have-a-problem.com/check.git</pre>
+<p>A certificate error means your git is protected. If git lists a commit, your git is affected. Your connections to GitHub, or any other <code>https://</code> git remote, can be intercepted and tampered with.</p>
+
+<p>To see an attack end to end, run the command below in a temporary directory. It clones a repository from a test server impersonating GitHub. The <code translate="no">-c</code> option redirects <code translate="no">github.com</code> to our test server for this one command only. The server presents a <code translate="no">github.com</code> certificate issued by one of the compromised eMudhra intermediates.</p>
+<pre translate="no">git -c http.curloptResolve=github.com:443:15.235.19.186 clone https://fake-user@github.com/galadran/emudhra-git-test</pre>
+
+<p>A patched git will refuse with a certificate error. If the clone succeeds, you'll see a <code translate="no">README.md</code> starting with <strong>INTERCEPTED</strong>.</p>
+
+<p>A real attacker would not need the extra option. Anyone on the network path between you and GitHub can redirect your traffic themselves.</p>
+
+<p>You can replace the demo repository with any other, public or private. Keep the <code translate="no">fake-user@</code> prefix. Without it, git would send your GitHub credentials to the test server. For example:</p>
+
+<pre translate="no">git -c http.curloptResolve=github.com:443:15.235.19.186 clone https://fake-user@github.com/Homebrew/brew</pre>
+
+<p>curl, python3 and the other tools Apple ships are affected in the same way. To check curl, run:</p>
+<pre translate="no">curl https://dv-g3b-noct-emudhra.we-have-a-problem.com/
+curl https://dv-g3b-aaa-noct-emudhra.we-have-a-problem.com/</pre>
+<p>A certificate error means curl is protected.</p>
+
+<h2 id="ask"><a href="#ask">What should Apple do?</a></h2>
+
+<p>Apple has already protected Safari and other apps built on its networking framework.</p>
+
+<p>Apple needs to ship a fix for macOS developers as soon as possible, for example by removing the affected roots from <code translate="no">/etc/ssl/cert.pem</code>.</p>
+
+<h2 id="workaround"><a href="#workaround">What can developers do in the meantime?</a></h2>
+
+<p>The affected roots can be removed by hand. The <a href="./#macos-curl">macOS workaround</a> on the main page walks through the steps. Apple's <a href="https://support.apple.com/en-us/149555">guidance</a> states that macOS updates may revert the fix, so developers need to repeat the checks above and the workaround after every update until Apple ships a fix.</p>
+
+<p>Security teams should also consider whether macOS runners are used in their CI or other build infrastructure and evaluate the supply chain risk.</p>
+
+<hr>
+
+<p>Site published by <a href="https://github.com/dennisjackson">Dennis Jackson</a>. This site is the work of <a href="https://github.com/galadran/we-have-a-problem.com/graphs/contributors">many contributors</a> from the community. The source is on <a href="https://github.com/galadran/we-have-a-problem.com">GitHub</a> and PRs are welcome. Licensed under the <a href="https://github.com/galadran/we-have-a-problem.com/blob/main/LICENSE">Apache License, Version 2.0</a>.</p>
+
+</div>
+</body>
+</html>
