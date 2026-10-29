@@ -136,6 +136,8 @@ openssl dgst -sha384 -verify EM-DV-TLS-CA-G3B.pub.pem -signature EM-DV-TLS-CA-G3
 
 <p>A ✅ only means that the connection failed. Browsers do not tell the page why, so a network problem looks the same as a rejected certificate. To double-check, open the link in that row: if it loads without a warning page, the browser is vulnerable.</p>
 
+<p>If the browser is behind a proxy that intercepts TLS, the result reflects the proxy's trust store rather than the browser's. A ❌ then means the proxy still trusts the compromised intermediates, and every client behind it remains vulnerable until the proxy is updated or disabled, even if the browser itself has been patched.</p>
+
 <p>On 22nd October 2026, two chains marked <em>No CT</em> were added. Their leaf certificates were never logged to Certificate Transparency (CT), so clients that enforce CT reject them even if they still trust the intermediate. A successful connection to these hosts means the client trusts the compromised intermediates <em>and</em> does not enforce CT. As described <a href="#cause">below</a>, these are the clients that can be attacked without anyone noticing.</p>
 
 <p>To check curl or other command-line clients, run:</p>
