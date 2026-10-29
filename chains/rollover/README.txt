@@ -27,7 +27,7 @@ rollover certificate is signed by the key of the existing G3B
 intermediate, which is cross-signed as below.
 
 Each leaf certifies the same key as the corresponding noct leaf in the
-parent directory (dv-g3b-noct-emudhra.we-have-a-problem.com.pem and
+regular directory (dv-g3b-noct-emudhra.we-have-a-problem.com.pem and
 dv-g3b-aaa-noct-emudhra.we-have-a-problem.com.pem), so only the signing
 CA key and the chain differ.
 

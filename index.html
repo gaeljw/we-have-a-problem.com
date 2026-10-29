@@ -146,7 +146,7 @@ curl https://dv-g3b-aaa-emudhra.we-have-a-problem.com/</pre>
 curl https://dv-g3b-aaa-noct-emudhra.we-have-a-problem.com/</pre>
 <p>Most browsers enforce CT, but many non-browser clients, including curl, do not which places them at greater risk.</p>
 
-<p>To check a trust store offline, <a href="chains.zip">chains.zip</a> contains the certificate chain served by each of the fourteen hosts above in PEM format, with instructions for verifying them with OpenSSL.</p>
+<p>To check a trust store offline, <a href="chains.zip">chains.zip</a> contains the certificate chain served by each of the fourteen hosts above in PEM format, plus some additional test cases and instructions for verifying them with OpenSSL.</p>
 
 <h2 id="cause"><a href="#cause">What is known about the cause?</a></h2>
 
@@ -171,6 +171,8 @@ curl https://dv-g3b-aaa-noct-emudhra.we-have-a-problem.com/</pre>
 <h2 id="operators"><a href="#operators">What actions can trust store operators take?</a></h2>
 
 <p>Please see <a href="https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/0R3XLJL6FuE">this thread</a> in Mozilla's dev-security-policy forum.</p>
+
+<p>Implementors may also find <a href="chains.zip">chains.zip</a> useful as it includes additional test cases to verify that any changes are effective.</p>
 
 
 <h2 id="users"><a href="#users">What actions can users take?</a></h2>
